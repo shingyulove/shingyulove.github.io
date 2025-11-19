@@ -238,7 +238,7 @@
             
             el.appendChild(icon);
 
-            const size = 45 + Math.random() * 45; 
+            const size = 45 + Math.random() * 90; 
             el.style.width = `${size}px`; el.style.height = `${size}px`;
             const rot = (Math.random() - 0.5) * 40; const scale = 0.9 + Math.random() * 0.2;
             el.style.transform = `rotate(${rot}deg) scale(${scale})`;
@@ -249,7 +249,7 @@
         function drawSvgDoodle(container) {
             const data = doodles[Math.floor(Math.random() * doodles.length)];
             const color = palette[Math.floor(Math.random() * palette.length)];
-            const size = 50 + Math.random() * 50; 
+            const size = 50 + Math.random() * 100; 
             const el = document.createElement('div');
             el.className = 'doodle-item doodle-svg';
             el.style.width = `${size}px`; el.style.height = `${size}px`;
