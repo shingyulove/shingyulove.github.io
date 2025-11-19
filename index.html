@@ -204,7 +204,7 @@
         const maidNames = ["Miku", "Rina", "Hana", "Momo", "Yuki", "Alice", "Coco", "omgg", "lilith", "muli"];
         
         // 日文短語
-        const jpTexts = ["大好き", "推し♡", "にゃん", "LOVE", "神対応", "萌え", "Chu!", "尊い"];
+        const jpTexts = ["大好き", "推し♡", "にゃん", "LOVE", "神対応", "萌え", "Chu!", "kawaii", "尊い", "喜歡"];
 
         // =======================================================
         // 2. 內建資源 (手繪 SVG)
@@ -242,7 +242,7 @@
             for(let i=0; i<textCount; i++) drawText(canvas);
 
             // 4. 畫圖案 (6-9個，PNG與SVG混搭)
-            const doodleCount = 6 + Math.floor(Math.random() * 4);
+            const doodleCount = 6 + Math.floor(Math.random() * 3);
             for(let i=0; i<doodleCount; i++) drawRandomAsset(canvas);
         }
 
