@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>女僕手繪 Chekki (最終完整版)</title>
+    <title>女僕手繪 Chekki (本地圖片版)</title>
     <style>
-        /* 1. 引入字體 */
         @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=RocknRoll+One&family=Yomogi&display=swap');
 
         :root {
@@ -17,12 +16,10 @@
 
         body {
             background-color: var(--bg-color);
-            /* 背景網格 */
             background-image: 
                 linear-gradient(#ffdce5 1px, transparent 1px),
                 linear-gradient(90deg, #ffdce5 1px, transparent 1px);
             background-size: 20px 20px;
-            
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -48,7 +45,6 @@
             text-shadow: 2px 2px 0 #fff;
         }
 
-        /* 按鈕區 */
         .controls { margin-top: 20px; z-index: 100; padding-bottom: 20px; }
 
         button {
@@ -66,7 +62,6 @@
         }
         button:active { transform: scale(0.95); }
 
-        /* 拍立得卡片 */
         .instax {
             position: relative;
             width: 340px;
@@ -79,12 +74,10 @@
             flex-shrink: 0;
         }
 
-        /* 手機適配 */
         @media (max-width: 380px) {
             .instax { transform: scale(0.85); margin-bottom: -60px; }
         }
 
-        /* 照片區域 (灰色) */
         .photo-area {
             position: absolute;
             top: 30px; left: 20px;
@@ -96,68 +89,55 @@
             border-radius: 2px;
         }
 
-        /* 畫布層 */
         .canvas-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; pointer-events: none;
         }
 
-        /* 簽名樣式 */
+        /* 邊框圖片 */
+        .frame-image {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: contain; z-index: 5; opacity: 0.9; pointer-events: none;
+        }
+
+        /* 簽名 */
         .signature-group {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 50;
+            position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 50;
         }
         .sig-name {
             font-family: 'RocknRoll One', sans-serif;
-            font-size: 2.5rem; color: #ff6b8b; line-height: 1;
-            text-shadow: 2px 2px 0 #fff;
+            font-size: 2.5rem; color: #ff6b8b; line-height: 1; text-shadow: 2px 2px 0 #fff;
         }
         .sig-date {
             font-family: 'Dela Gothic One', cursive;
-            font-size: 1.1rem; color: #888; margin-top: 5px;
-            text-shadow: 1px 1px 0 #fff;
+            font-size: 1.1rem; color: #888; margin-top: 5px; text-shadow: 1px 1px 0 #fff;
         }
 
-        /* 圖案容器 */
         .doodle-item {
-            position: absolute;
-            display: flex; justify-content: center; align-items: center;
+            position: absolute; display: flex; justify-content: center; align-items: center;
             z-index: 20;
             animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* 關鍵：讓 PNG 自動變色的樣式 */
+        /* PNG 自動變色 (Mask) */
         .colored-icon {
-            width: 100%;
-            height: 100%;
-            /* 背景色由 JS 動態設定，這裡只設 mask */
-            -webkit-mask-size: contain;
-            mask-size: contain;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-position: center;
-            mask-position: center;
-            opacity: 0.9; /* 像印章一樣稍微透一點 */
+            width: 100%; height: 100%;
+            -webkit-mask-size: contain; mask-size: contain;
+            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+            -webkit-mask-position: center; mask-position: center;
+            opacity: 0.9;
         }
 
-        /* SVG 樣式 */
         .doodle-svg { opacity: 0.95; }
-
-        /* 日文文字 */
+        
         .text-item {
             position: absolute; z-index: 25;
             font-weight: bold; white-space: nowrap;
             mix-blend-mode: multiply; line-height: 1;
         }
 
-        @keyframes pop {
-            from { transform: scale(0) rotate(0deg); opacity: 0; }
-            to { opacity: 1; } 
-        }
+        @keyframes pop { from { transform: scale(0) rotate(0deg); opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -170,85 +150,78 @@
     </div>
 
     <div class="controls">
-        <button onclick="generateArt()">✨ 生成隨機圖案 ✨</button>
+        <button onclick="generateArt()">✨ 生成邊框與裝飾 ✨</button>
     </div>
 
     <script>
-        // =======================================================
-        // 1. 用戶設置區 (請修改這裡)
-        // =======================================================
+        // ================= 配置區 =================
         
         /* 
-           請將你的純黑 PNG 放入 images 文件夾。
-           然後在這裡填寫文件名。
-           例如: "./images/star.png"
+           1. 圖案庫 (Images) 
+           這就是你要找的功能！放在 images 文件夾裡的 PNG。
+           請確保這些圖片是【純黑色透明背景】，系統會自動幫它們上色。
         */
         const pngLibrary = [
-            // 這裡我放幾個網路上的黑色圖標作為演示，你可以刪掉換成你的本地路徑
-            "https://cdn-icons-png.flaticon.com/128/1828/1828884.png", // 星星
-            "https://cdn-icons-png.flaticon.com/128/1077/1077035.png", // 愛心
-            "https://cdn-icons-png.flaticon.com/128/2913/2913520.png", // 櫻桃
-            "./images/Favorite.png",   // 蝴蝶結
-            // 你實際使用時應該長這樣：
-            // "./images/1.png",
-            // "./images/2.png",
+            "./images/Favorite.png",
+            "./images/2.png",
+            "./images/star.png", 
+            "./images/heart.png",
+            // 如果你有更多，請繼續添加：
+            // "./images/cake.png",
         ];
 
-        // 和諧配色盤 (莫蘭迪/馬卡龍)
-        const palette = ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA", "#90BAD6", "#F0A6CA"];
-        
-        // 簽名筆色 (深一點)
-        const penColors = ["#ff6b8b", "#ff9f43", "#5f27cd", "#54a0ff", "#1dd1a1"];
-        
-        // 女僕名字
-        const maidNames = ["Miku", "Rina", "Hana", "Momo", "Yuki", "Alice", "Coco", "omgg", "lilith", "muli"];
-        
-        // 日文短語
-        const jpTexts = ["大好き", "推し♡", "にゃん", "LOVE", "神対応", "萌え", "Chu!", "kawaii", "尊い", "喜歡"];
+        /* 
+           2. 邊框庫 (Frames)
+           放在 frames 文件夾裡的 PNG。
+        */
+        const frameLibrary = [
+             "./frames/border1.png", 
+             "./frames/border2.png",
+        ];
 
-        // =======================================================
-        // 2. 內建資源 (手繪 SVG)
-        // =======================================================
+        // 配色盤
+        const palette = ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA", "#90BAD6", "#F0A6CA"];
+        const penColors = ["#ff6b8b", "#ff9f43", "#5f27cd", "#54a0ff", "#1dd1a1"];
+        const maidNames = ["Miku", "Rina", "Hana", "Momo", "Yuki", "Alice", "Coco"];
+        const jpTexts = ["大好き", "推し♡", "にゃん", "LOVE", "神対応", "萌え", "Chu!", "尊い"];
+
+        // 內置手繪線條 (當 PNG 讀取失敗或隨機選中時使用)
         const doodles = [
-            { type: 'stroke', path: 'M50,10 Q60,40 90,50 Q60,60 50,90 Q40,60 10,50 Q40,40 50,10' }, // 閃光
-            { type: 'stroke', path: 'M20,20 L40,40 M40,20 L20,40 M60,20 L80,40 M80,20 L60,40' }, // XX
-            { type: 'stroke', path: 'M50,20 C20,20 10,50 30,70 L50,90 L70,70 C90,50 80,20 50,20 Z' }, // 愛心
-            { type: 'stroke', path: 'M10,50 Q30,20 50,50 T90,50' }, // 波浪
-            { type: 'stroke', path: 'M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0' }, // 圈圈
-            { type: 'stroke', path: 'M50,10 C20,40 20,80 50,90 C80,80 80,40 50,10 Z' }, // 水滴
-            { type: 'fill', path: 'M50,90 C20,60 0,40 20,20 C35,5 50,25 50,25 C50,25 65,5 80,20 C100,40 80,60 50,90 Z' },
-            { type: 'fill', path: 'M50,5 L60,35 L95,35 L70,55 L80,90 L50,70 L20,90 L30,55 L5,35 L40,35 Z' }
+            { type: 'stroke', path: 'M50,10 Q60,40 90,50 Q60,60 50,90 Q40,60 10,50 Q40,40 50,10' }, 
+            { type: 'stroke', path: 'M20,20 L40,40 M40,20 L20,40 M60,20 L80,40 M80,20 L60,40' }, 
+            { type: 'stroke', path: 'M50,20 C20,20 10,50 30,70 L50,90 L70,70 C90,50 80,20 50,20 Z' }, 
+            { type: 'stroke', path: 'M10,50 Q30,20 50,50 T90,50' }, 
+            { type: 'stroke', path: 'M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0' }, 
+            { type: 'stroke', path: 'M50,10 C20,40 20,80 50,90 C80,80 80,40 50,10 Z' }, 
+            { type: 'stroke', path: 'M20,50 Q35,20 50,50 Q65,80 80,50' } 
         ];
 
         let occupiedRects = [];
-
-        // =======================================================
-        // 3. 核心邏輯
-        // =======================================================
 
         function generateArt() {
             const canvas = document.getElementById('canvas');
             canvas.innerHTML = '';
             occupiedRects = [];
 
-            // 1. 畫邊框
-            drawCreativeBorder(canvas);
-
-            // 2. 畫簽名
+            drawHybridFrame(canvas);
             drawSignature(canvas);
 
-            // 3. 畫日文 (1-2個)
             const textCount = 1 + Math.floor(Math.random() * 2);
             for(let i=0; i<textCount; i++) drawText(canvas);
 
-            // 4. 畫圖案 (6-9個，PNG與SVG混搭)
-            const doodleCount = 6 + Math.floor(Math.random() * 3);
+            // 生成裝飾圖案 (PNG + SVG)
+            const doodleCount = 6 + Math.floor(Math.random() * 4);
             for(let i=0; i<doodleCount; i++) drawRandomAsset(canvas);
         }
 
+        // === 圖案抽取邏輯 (PNG 優先) ===
         function drawRandomAsset(container) {
-            // 如果 PNG 庫有東西，60% 機率用 PNG
-            const usePng = (pngLibrary.length > 0) && (Math.random() < 0.6);
+            // 檢測是否有設置 PNG 路徑
+            const hasPng = pngLibrary.length > 0;
+            
+            // 如果有 PNG，60% 機率使用 PNG，40% 機率使用內置線條
+            // (如果你想全部用 PNG，把 0.6 改成 1.0)
+            const usePng = hasPng && (Math.random() < 0.6);
 
             if (usePng) {
                 drawPngSticker(container);
@@ -257,66 +230,67 @@
             }
         }
 
-        // === 關鍵函數：PNG 自動變色 ===
+        // 繪製 PNG (自動變色)
         function drawPngSticker(container) {
             const src = pngLibrary[Math.floor(Math.random() * pngLibrary.length)];
-            const color = palette[Math.floor(Math.random() * palette.length)]; // 隨機選色
-            
+            const color = palette[Math.floor(Math.random() * palette.length)];
             const el = document.createElement('div');
             el.className = 'doodle-item';
             
-            // 使用 div + mask 來實現變色
+            // Mask 變色技術
             const icon = document.createElement('div');
             icon.className = 'colored-icon';
-            icon.style.backgroundColor = color; // 這裡設定顏色
+            icon.style.backgroundColor = color;
             icon.style.webkitMaskImage = `url('${src}')`;
             icon.style.maskImage = `url('${src}')`;
             
             el.appendChild(icon);
 
             const size = 45 + Math.random() * 45; 
-            el.style.width = `${size}px`;
-            el.style.height = `${size}px`;
-
-            const rot = (Math.random() - 0.5) * 40;
-            const scale = 0.9 + Math.random() * 0.2;
+            el.style.width = `${size}px`; el.style.height = `${size}px`;
+            const rot = (Math.random() - 0.5) * 40; const scale = 0.9 + Math.random() * 0.2;
             el.style.transform = `rotate(${rot}deg) scale(${scale})`;
-
             container.appendChild(el);
             placeItem(el, size, size, container);
         }
 
+        // 繪製內置 SVG 線條
         function drawSvgDoodle(container) {
             const data = doodles[Math.floor(Math.random() * doodles.length)];
             const color = palette[Math.floor(Math.random() * palette.length)];
             const size = 50 + Math.random() * 50; 
-            
             const el = document.createElement('div');
             el.className = 'doodle-item doodle-svg';
-            el.style.width = `${size}px`;
-            el.style.height = `${size}px`;
-
+            el.style.width = `${size}px`; el.style.height = `${size}px`;
             const strokeWidth = 2 + Math.random() * 3;
-            let svgContent = '';
-
-            if (data.type === 'stroke') {
-                svgContent = `<path d="${data.path}" stroke="${color}" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
-            } else {
-                svgContent = `<path d="${data.path}" fill="${color}" stroke="none" opacity="0.8"/>`;
-            }
-
+            let svgContent = `<path d="${data.path}" stroke="${color}" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
             el.innerHTML = `<svg viewBox="0 0 100 100" style="overflow:visible; width:100%; height:100%">${svgContent}</svg>`;
-
-            const rot = (Math.random() - 0.5) * 90; 
-            const scale = 0.7 + Math.random() * 0.6; 
+            const rot = (Math.random() - 0.5) * 90; const scale = 0.7 + Math.random() * 0.6; 
             el.style.transform = `rotate(${rot}deg) scale(${scale})`;
-
             container.appendChild(el);
             placeItem(el, size, size, container);
         }
 
-        // === 邊框生成 ===
-        function drawCreativeBorder(container) {
+        // === 邊框混合邏輯 ===
+        function drawHybridFrame(container) {
+            const hasExternal = frameLibrary.length > 0;
+            // 30% 機率用圖片邊框 (如果有)，否則用內置手繪邊框
+            const useExternal = hasExternal && (Math.random() < 0.3);
+
+            if (useExternal) {
+                const src = frameLibrary[Math.floor(Math.random() * frameLibrary.length)];
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'frame-image';
+                img.onerror = function() { this.remove(); drawInternalSvgBorder(container); };
+                container.appendChild(img);
+            } else {
+                drawInternalSvgBorder(container);
+            }
+        }
+
+        // 內置手繪邊框生成 (8種樣式)
+        function drawInternalSvgBorder(container) {
             const svgNS = "http://www.w3.org/2000/svg";
             const svg = document.createElementNS(svgNS, "svg");
             Object.assign(svg.style, {
@@ -325,59 +299,83 @@
             });
 
             const color = palette[Math.floor(Math.random() * palette.length)];
-            const type = Math.floor(Math.random() * 4); 
+            const type = Math.floor(Math.random() * 8); 
             const x=20, y=30, w=300, h=380; 
 
-            if (type === 0) drawPath(svg, generateWobblyRect(x, y, w, h), color, 3);
-            else if (type === 1) drawDecoratedRect(svg, x, y, w, h, color, 'circle');
-            else if (type === 2) drawDecoratedRect(svg, x, y, w, h, color, 'cross');
-            else {
-                const color2 = palette[Math.floor(Math.random() * palette.length)];
-                drawPath(svg, generateWobblyRect(x, y, w, h), color, 2);
-                drawPath(svg, generateWobblyRect(x+5, y+5, w, h), color2, 2);
+            switch (type) {
+                case 0: drawPath(svg, generateWobblyRect(x, y, w, h), color, 3); break;
+                case 1: drawPath(svg, generateWobblyRect(x, y, w, h), color, 2); const color2 = palette[Math.floor(Math.random() * palette.length)]; drawPath(svg, generateWobblyRect(x+5, y+5, w, h), color2, 2); break;
+                case 2: drawDecoratedRect(svg, x, y, w, h, color, 'circle'); break;
+                case 3: drawDecoratedRect(svg, x, y, w, h, color, 'cross'); break;
+                case 4: drawLaceRect(svg, x, y, w, h, color); break;
+                case 5: drawDecoratedRect(svg, x, y, w, h, color, 'heart'); break;
+                case 6: drawCornerBorder(svg, x, y, w, h, color); break;
+                case 7: drawDashedBorder(svg, x, y, w, h, color); break;
             }
             container.appendChild(svg);
         }
 
-        function drawPath(svg, d, color, width) {
+        // 輔助繪圖函數
+        function drawPath(svg, d, color, width, dashed = false) {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("d", d);
-            path.setAttribute("fill", "none");
-            path.setAttribute("stroke", color);
-            path.setAttribute("stroke-width", width);
-            path.setAttribute("stroke-linecap", "round");
-            path.setAttribute("opacity", "0.8");
+            path.setAttribute("d", d); path.setAttribute("fill", "none");
+            path.setAttribute("stroke", color); path.setAttribute("stroke-width", width);
+            path.setAttribute("stroke-linecap", "round"); path.setAttribute("opacity", "0.8");
+            if(dashed) path.setAttribute("stroke-dasharray", "10, 10");
             svg.appendChild(path);
         }
-
+        function drawDashedBorder(svg, x, y, w, h, color) { drawPath(svg, generateWobblyRect(x, y, w, h), color, 3, true); }
+        function drawCornerBorder(svg, x, y, w, h, color) {
+            const len = 40; 
+            drawPath(svg, `M ${x} ${y+len} L ${x} ${y} L ${x+len} ${y}`, color, 4);
+            drawPath(svg, `M ${x+w-len} ${y} L ${x+w} ${y} L ${x+w} ${y+len}`, color, 4);
+            drawPath(svg, `M ${x+w} ${y+h-len} L ${x+w} ${y+h} L ${x+w-len} ${y+h}`, color, 4);
+            drawPath(svg, `M ${x+len} ${y+h} L ${x} ${y+h} L ${x} ${y+h-len}`, color, 4);
+        }
+        function drawLaceRect(svg, x, y, w, h, color) {
+            drawPath(svg, `M ${x} ${y} L ${x+w} ${y} L ${x+w} ${y+h} L ${x} ${y+h} Z`, color, 1);
+            const radius = 10; 
+            const drawScallops = (bx, by, dx, dy, steps) => {
+                for(let i=0; i<steps; i++) {
+                    const sx = bx + dx * i * (radius*2); const sy = by + dy * i * (radius*2);
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    circle.setAttribute("cx", sx + (dx?radius:0) + (dy?0:radius)); 
+                    circle.setAttribute("cy", sy + (dy?radius:0) + (dx?0:radius));
+                    circle.setAttribute("r", radius/1.5); circle.setAttribute("fill", "none");
+                    circle.setAttribute("stroke", color); circle.setAttribute("stroke-width", 2);
+                    svg.appendChild(circle);
+                }
+            };
+            const hSteps = Math.floor(w / (radius*2)); const vSteps = Math.floor(h / (radius*2));
+            drawScallops(x, y, 1, 0, hSteps); drawScallops(x, y+h, 1, 0, hSteps);
+            drawScallops(x, y, 0, 1, vSteps); drawScallops(x+w, y, 0, 1, vSteps);
+        }
         function drawDecoratedRect(svg, x, y, w, h, color, shape) {
-            const gap = 25; 
+            const gap = 30; 
             const drawPoint = (px, py) => {
+                const jx = px + (Math.random()-0.5)*5; const jy = py + (Math.random()-0.5)*5;
                 if (shape === 'circle') {
                     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                    circle.setAttribute("cx", px + (Math.random()-0.5)*5);
-                    circle.setAttribute("cy", py + (Math.random()-0.5)*5);
-                    circle.setAttribute("r", 3 + Math.random()*2);
-                    circle.setAttribute("fill", "none");
-                    circle.setAttribute("stroke", color);
-                    circle.setAttribute("stroke-width", 2);
+                    circle.setAttribute("cx", jx); circle.setAttribute("cy", jy);
+                    circle.setAttribute("r", 3 + Math.random()*2); circle.setAttribute("fill", "none");
+                    circle.setAttribute("stroke", color); circle.setAttribute("stroke-width", 2);
                     svg.appendChild(circle);
                 } else if (shape === 'cross') {
                     const cross = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    const cx = px + (Math.random()-0.5)*5;
-                    const cy = py + (Math.random()-0.5)*5;
-                    const s = 4;
-                    cross.setAttribute("d", `M${cx-s},${cy-s} L${cx+s},${cy+s} M${cx+s},${cy-s} L${cx-s},${cy+s}`);
-                    cross.setAttribute("stroke", color);
-                    cross.setAttribute("stroke-width", 2);
-                    cross.setAttribute("stroke-linecap", "round");
-                    svg.appendChild(cross);
+                    const s = 4; cross.setAttribute("d", `M${jx-s},${jy-s} L${jx+s},${jy+s} M${jx+s},${jy-s} L${jx-s},${jy+s}`);
+                    cross.setAttribute("stroke", color); cross.setAttribute("stroke-width", 2);
+                    cross.setAttribute("stroke-linecap", "round"); svg.appendChild(cross);
+                } else if (shape === 'heart') {
+                    const heart = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    heart.setAttribute("d", "M0,-5 C-5,-10 -10,-5 -10,0 C-10,5 -5,10 0,15 C5,10 10,5 10,0 C10,-5 5,-10 0,-5 Z");
+                    heart.setAttribute("transform", `translate(${jx}, ${jy}) scale(0.5)`);
+                    heart.setAttribute("fill", "none"); heart.setAttribute("stroke", color);
+                    heart.setAttribute("stroke-width", 3); svg.appendChild(heart);
                 }
             };
             for(let i=x; i<=x+w; i+=gap) { drawPoint(i, y); drawPoint(i, y+h); }
             for(let i=y; i<=y+h; i+=gap) { drawPoint(x, i); drawPoint(x+w, i); }
         }
-
         function generateWobblyRect(x, y, w, h) {
             const wiggle = () => (Math.random() - 0.5) * 10;
             return `M ${x+wiggle()} ${y+wiggle()} L ${x+w+wiggle()} ${y+wiggle()} L ${x+w+wiggle()} ${y+h+wiggle()} L ${x+wiggle()} ${y+h+wiggle()} Z`;
@@ -391,47 +389,36 @@
             const dateStr = `${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`;
             group.innerHTML = `<div class="sig-name">${name} <span style="font-size:0.6em">♡</span></div><div class="sig-date">${dateStr}</div>`;
             group.querySelector('.sig-name').style.color = penColors[Math.floor(Math.random() * penColors.length)];
-
             container.appendChild(group);
-            const w = 200; const h = 100; 
-            const rot = (Math.random() - 0.5) * 15;
+            const w = 200; const h = 100; const rot = (Math.random() - 0.5) * 15;
             group.style.transform = `rotate(${rot}deg)`;
             placeItem(group, w, h, container, true);
         }
 
         function drawText(container) {
             const text = jpTexts[Math.floor(Math.random() * jpTexts.length)];
-            const el = document.createElement('div');
-            el.className = 'text-item';
-            el.innerText = text;
+            const el = document.createElement('div'); el.className = 'text-item'; el.innerText = text;
             el.style.color = palette[Math.floor(Math.random() * palette.length)];
             el.style.fontSize = `${24 + Math.random() * 20}px`;
             el.style.fontFamily = Math.random() > 0.5 ? "'RocknRoll One'" : "'Yomogi'";
-            const rot = (Math.random() - 0.5) * 40;
-            el.style.transform = `rotate(${rot}deg)`;
-            container.appendChild(el);
-            placeItem(el, text.length * 30, 40, container);
+            const rot = (Math.random() - 0.5) * 40; el.style.transform = `rotate(${rot}deg)`;
+            container.appendChild(el); placeItem(el, text.length * 30, 40, container);
         }
 
         function placeItem(el, w, h, container, preferEdge = false) {
-            const containerW = 340; const containerH = 540; const padding = 10;
-            let found = false;
+            const containerW = 340; const containerH = 540; const padding = 10; let found = false;
             for(let i=0; i<30; i++) {
                 const left = Math.random() * (containerW - w - padding);
                 const top = Math.random() * (containerH - h - padding);
                 const newRect = { left, top, right: left + w, bottom: top + h };
                 if (!checkCollision(newRect)) {
                     if (preferEdge && top > 120 && top < 380) { if (Math.random() > 0.1) continue; }
-                    el.style.left = `${left}px`;
-                    el.style.top = `${top}px`;
-                    occupiedRects.push(newRect);
-                    found = true;
-                    break;
+                    el.style.left = `${left}px`; el.style.top = `${top}px`;
+                    occupiedRects.push(newRect); found = true; break;
                 }
             }
             if (!found) el.remove();
         }
-
         function checkCollision(r1) {
             const buffer = 5;
             for (let r2 of occupiedRects) {
@@ -439,7 +426,6 @@
             }
             return false;
         }
-
         window.onload = generateArt;
     </script>
 </body>
