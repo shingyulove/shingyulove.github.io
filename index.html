@@ -185,10 +185,10 @@
         */
         const pngLibrary = [
             // 這裡我放幾個網路上的黑色圖標作為演示，你可以刪掉換成你的本地路徑
-            "./images/Favorite.png", // 星星
+            "https://cdn-icons-png.flaticon.com/128/1828/1828884.png", // 星星
             "https://cdn-icons-png.flaticon.com/128/1077/1077035.png", // 愛心
             "https://cdn-icons-png.flaticon.com/128/2913/2913520.png", // 櫻桃
-            "https://cdn-icons-png.flaticon.com/128/546/546394.png",   // 蝴蝶結
+            "./images/Favorite.png",   // 蝴蝶結
             // 你實際使用時應該長這樣：
             // "./images/1.png",
             // "./images/2.png",
@@ -384,3 +384,63 @@
         }
 
         function drawSignature(container) {
+            const group = document.createElement('div');
+            group.className = 'signature-group';
+            const name = maidNames[Math.floor(Math.random() * maidNames.length)];
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}.${today.getMonth()+1}.${today.getDate()}`;
+            group.innerHTML = `<div class="sig-name">${name} <span style="font-size:0.6em">♡</span></div><div class="sig-date">${dateStr}</div>`;
+            group.querySelector('.sig-name').style.color = penColors[Math.floor(Math.random() * penColors.length)];
+
+            container.appendChild(group);
+            const w = 200; const h = 100; 
+            const rot = (Math.random() - 0.5) * 15;
+            group.style.transform = `rotate(${rot}deg)`;
+            placeItem(group, w, h, container, true);
+        }
+
+        function drawText(container) {
+            const text = jpTexts[Math.floor(Math.random() * jpTexts.length)];
+            const el = document.createElement('div');
+            el.className = 'text-item';
+            el.innerText = text;
+            el.style.color = palette[Math.floor(Math.random() * palette.length)];
+            el.style.fontSize = `${24 + Math.random() * 20}px`;
+            el.style.fontFamily = Math.random() > 0.5 ? "'RocknRoll One'" : "'Yomogi'";
+            const rot = (Math.random() - 0.5) * 40;
+            el.style.transform = `rotate(${rot}deg)`;
+            container.appendChild(el);
+            placeItem(el, text.length * 30, 40, container);
+        }
+
+        function placeItem(el, w, h, container, preferEdge = false) {
+            const containerW = 340; const containerH = 540; const padding = 10;
+            let found = false;
+            for(let i=0; i<30; i++) {
+                const left = Math.random() * (containerW - w - padding);
+                const top = Math.random() * (containerH - h - padding);
+                const newRect = { left, top, right: left + w, bottom: top + h };
+                if (!checkCollision(newRect)) {
+                    if (preferEdge && top > 120 && top < 380) { if (Math.random() > 0.1) continue; }
+                    el.style.left = `${left}px`;
+                    el.style.top = `${top}px`;
+                    occupiedRects.push(newRect);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) el.remove();
+        }
+
+        function checkCollision(r1) {
+            const buffer = 5;
+            for (let r2 of occupiedRects) {
+                if (r1.left < r2.right + buffer && r1.right > r2.left - buffer && r1.top < r2.bottom + buffer && r1.bottom > r2.top - buffer) return true;
+            }
+            return false;
+        }
+
+        window.onload = generateArt;
+    </script>
+</body>
+</html>
