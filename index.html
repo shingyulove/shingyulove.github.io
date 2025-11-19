@@ -224,7 +224,7 @@
             const doodleCount = 6 + Math.floor(Math.random() * 5);
             for(let i=0; i<doodleCount; i++) drawRandomItem(canvas);
         }
-
+        
         // 統一處理：決定畫 Emoji 還是 SVG
         function drawRandomItem(container) {
             // 30% 機率是 Emoji，70% 機率是手繪線條/色塊
@@ -236,7 +236,51 @@
                 drawDoodle(container);
             }
         }
+        function drawPngSticker(container) {
+            // 1. 隨機選一張 PNG 路徑
+            const src = pngLibrary[Math.floor(Math.random() * pngLibrary.length)];
+    
+            // 2. 隨機選一個和諧的顏色
+            const color = palette[Math.floor(Math.random() * palette.length)];
 
+            const el = document.createElement('div');
+            el.className = 'doodle-item';
+
+            // --- 核心修改開始 ---
+            // 我們不創建 <img> 標籤，而是創建一個 div
+            // 利用 mask 技術讓 PNG 變色
+            const sticker = document.createElement('div');
+            sticker.style.width = '100%';
+            sticker.style.height = '100%';
+            sticker.style.backgroundColor = color; // 這裡決定顏色！
+    
+            // 設定遮罩 (Mask)
+            sticker.style.webkitMaskImage = `url('${src}')`;
+            sticker.style.maskImage = `url('${src}')`;
+            sticker.style.webkitMaskSize = 'contain';
+            sticker.style.maskSize = 'contain';
+            sticker.style.webkitMaskRepeat = 'no-repeat';
+            sticker.style.maskRepeat = 'no-repeat';
+            sticker.style.webkitMaskPosition = 'center';
+            sticker.style.maskPosition = 'center';
+    
+            // 加上一點透明度，讓它像印章
+            sticker.style.opacity = '0.9'; 
+
+            el.appendChild(sticker);
+            // --- 核心修改結束 ---
+
+            const size = 45 + Math.random() * 45; 
+            el.style.width = `${size}px`;
+            el.style.height = `${size}px`;
+    
+            const rot = (Math.random() - 0.5) * 40;
+            const scale = 0.9 + Math.random() * 0.2;
+            el.style.transform = `rotate(${rot}deg) scale(${scale})`;
+
+            container.appendChild(el);
+            placeItem(el, size, size, container);
+    }
         function drawEmoji(container) {
             const emojiChar = emojis[Math.floor(Math.random() * emojis.length)];
             const el = document.createElement('div');
@@ -254,7 +298,7 @@
             container.appendChild(el);
             placeItem(el, size, size, container);
         }
-
+                
         function drawDoodle(container) {
             const data = doodles[Math.floor(Math.random() * doodles.length)];
             const color = colors[Math.floor(Math.random() * colors.length)];
