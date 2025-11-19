@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>女僕手繪 Chekki (本地圖片版)</title>
+    <title>女僕手繪 Chekki (最終乾淨版)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=RocknRoll+One&family=Yomogi&display=swap');
 
@@ -95,13 +95,11 @@
             z-index: 10; pointer-events: none;
         }
 
-        /* 邊框圖片 */
         .frame-image {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: contain; z-index: 5; opacity: 0.9; pointer-events: none;
         }
 
-        /* 簽名 */
         .signature-group {
             position: absolute; display: flex; flex-direction: column; align-items: center; z-index: 50;
         }
@@ -120,7 +118,6 @@
             animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* PNG 自動變色 (Mask) */
         .colored-icon {
             width: 100%; height: 100%;
             -webkit-mask-size: contain; mask-size: contain;
@@ -156,27 +153,20 @@
     <script>
         // ================= 配置區 =================
         
-        /* 
-           1. 圖案庫 (Images) 
-           這就是你要找的功能！放在 images 文件夾裡的 PNG。
-           請確保這些圖片是【純黑色透明背景】，系統會自動幫它們上色。
-        */
+        /* 1. 圖案庫 (Images) - 純黑色透明背景 PNG */
         const pngLibrary = [
-            "./images/Favorite.png",
+            "./images/1.png",
             "./images/2.png",
-            "./images/star.png", 
-            "./images/heart.png",
-            // 如果你有更多，請繼續添加：
-            // "./images/cake.png",
+            // "./images/star.png", 
+            // "./images/heart.png",
         ];
 
-        /* 
-           2. 邊框庫 (Frames)
-           放在 frames 文件夾裡的 PNG。
-        */
+        /* 2. 邊框庫 (Frames) - 放在 frames 文件夾裡的 PNG */
         const frameLibrary = [
              "./frames/border1.png", 
              "./frames/border2.png",
+             // 預設演示用，請換成你的文件：
+             "https://placehold.co/340x540/transparent/png?text=Frame+1"
         ];
 
         // 配色盤
@@ -185,15 +175,24 @@
         const maidNames = ["Miku", "Rina", "Hana", "Momo", "Yuki", "Alice", "Coco"];
         const jpTexts = ["大好き", "推し♡", "にゃん", "LOVE", "神対応", "萌え", "Chu!", "尊い"];
 
-        // 內置手繪線條 (當 PNG 讀取失敗或隨機選中時使用)
+        // ================= SVG 庫 (已刪除粉色色塊) =================
         const doodles = [
+            // 閃光
             { type: 'stroke', path: 'M50,10 Q60,40 90,50 Q60,60 50,90 Q40,60 10,50 Q40,40 50,10' }, 
+            // XX 符號
             { type: 'stroke', path: 'M20,20 L40,40 M40,20 L20,40 M60,20 L80,40 M80,20 L60,40' }, 
+            // 愛心 (線條)
             { type: 'stroke', path: 'M50,20 C20,20 10,50 30,70 L50,90 L70,70 C90,50 80,20 50,20 Z' }, 
+            // 波浪
             { type: 'stroke', path: 'M10,50 Q30,20 50,50 T90,50' }, 
+            // 圈圈
             { type: 'stroke', path: 'M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0' }, 
+            // 水滴
             { type: 'stroke', path: 'M50,10 C20,40 20,80 50,90 C80,80 80,40 50,10 Z' }, 
+            // 曲線
             { type: 'stroke', path: 'M20,50 Q35,20 50,50 Q65,80 80,50' } 
+            
+            // 注意：這裡已經刪除了那個造成粉色色塊的 'fill' path
         ];
 
         let occupiedRects = [];
@@ -209,20 +208,12 @@
             const textCount = 1 + Math.floor(Math.random() * 2);
             for(let i=0; i<textCount; i++) drawText(canvas);
 
-            // 生成裝飾圖案 (PNG + SVG)
             const doodleCount = 6 + Math.floor(Math.random() * 4);
             for(let i=0; i<doodleCount; i++) drawRandomAsset(canvas);
         }
 
-        // === 圖案抽取邏輯 (PNG 優先) ===
         function drawRandomAsset(container) {
-            // 檢測是否有設置 PNG 路徑
-            const hasPng = pngLibrary.length > 0;
-            
-            // 如果有 PNG，60% 機率使用 PNG，40% 機率使用內置線條
-            // (如果你想全部用 PNG，把 0.6 改成 1.0)
-            const usePng = hasPng && (Math.random() < 0.6);
-
+            const usePng = (pngLibrary.length > 0) && (Math.random() < 0.6);
             if (usePng) {
                 drawPngSticker(container);
             } else {
@@ -230,14 +221,12 @@
             }
         }
 
-        // 繪製 PNG (自動變色)
         function drawPngSticker(container) {
             const src = pngLibrary[Math.floor(Math.random() * pngLibrary.length)];
             const color = palette[Math.floor(Math.random() * palette.length)];
             const el = document.createElement('div');
             el.className = 'doodle-item';
             
-            // Mask 變色技術
             const icon = document.createElement('div');
             icon.className = 'colored-icon';
             icon.style.backgroundColor = color;
@@ -254,7 +243,6 @@
             placeItem(el, size, size, container);
         }
 
-        // 繪製內置 SVG 線條
         function drawSvgDoodle(container) {
             const data = doodles[Math.floor(Math.random() * doodles.length)];
             const color = palette[Math.floor(Math.random() * palette.length)];
@@ -271,10 +259,9 @@
             placeItem(el, size, size, container);
         }
 
-        // === 邊框混合邏輯 ===
         function drawHybridFrame(container) {
             const hasExternal = frameLibrary.length > 0;
-            // 30% 機率用圖片邊框 (如果有)，否則用內置手繪邊框
+            // 30% 機率用圖片邊框，否則用內置手繪邊框
             const useExternal = hasExternal && (Math.random() < 0.3);
 
             if (useExternal) {
@@ -289,7 +276,6 @@
             }
         }
 
-        // 內置手繪邊框生成 (8種樣式)
         function drawInternalSvgBorder(container) {
             const svgNS = "http://www.w3.org/2000/svg";
             const svg = document.createElementNS(svgNS, "svg");
@@ -315,7 +301,6 @@
             container.appendChild(svg);
         }
 
-        // 輔助繪圖函數
         function drawPath(svg, d, color, width, dashed = false) {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.setAttribute("d", d); path.setAttribute("fill", "none");
