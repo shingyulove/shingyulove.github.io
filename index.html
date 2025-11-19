@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>女僕手繪 Chekki (最終乾淨版)</title>
+    <title>女僕手繪 Chekki (圖案擴充版)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=RocknRoll+One&family=Yomogi&display=swap');
 
@@ -153,20 +153,17 @@
     <script>
         // ================= 配置區 =================
         
-        /* 1. 圖案庫 (Images) - 純黑色透明背景 PNG */
+        /* 1. 圖案庫 (Images) */
         const pngLibrary = [
-            "./images/1.png",
+            "./images/Favorite.png",
             "./images/2.png",
-            // "./images/star.png", 
-            // "./images/heart.png",
         ];
 
-        /* 2. 邊框庫 (Frames) - 放在 frames 文件夾裡的 PNG */
+        /* 2. 邊框庫 (Frames) */
         const frameLibrary = [
              "./frames/border1.png", 
              "./frames/border2.png",
-             // 預設演示用，請換成你的文件：
-             "https://placehold.co/340x540/transparent/png?text=Frame+1"
+
         ];
 
         // 配色盤
@@ -175,24 +172,51 @@
         const maidNames = ["Miku", "Rina", "Hana", "Momo", "Yuki", "Alice", "Coco"];
         const jpTexts = ["大好き", "推し♡", "にゃん", "LOVE", "神対応", "萌え", "Chu!", "尊い"];
 
-        // ================= SVG 庫 (已刪除粉色色塊) =================
+        // ================= 擴充後的 SVG 庫 =================
         const doodles = [
-            // 閃光
-            { type: 'stroke', path: 'M50,10 Q60,40 90,50 Q60,60 50,90 Q40,60 10,50 Q40,40 50,10' }, 
-            // XX 符號
-            { type: 'stroke', path: 'M20,20 L40,40 M40,20 L20,40 M60,20 L80,40 M80,20 L60,40' }, 
-            // 愛心 (線條)
-            { type: 'stroke', path: 'M50,20 C20,20 10,50 30,70 L50,90 L70,70 C90,50 80,20 50,20 Z' }, 
-            // 波浪
-            { type: 'stroke', path: 'M10,50 Q30,20 50,50 T90,50' }, 
-            // 圈圈
-            { type: 'stroke', path: 'M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0' }, 
-            // 水滴
-            { type: 'stroke', path: 'M50,10 C20,40 20,80 50,90 C80,80 80,40 50,10 Z' }, 
-            // 曲線
-            { type: 'stroke', path: 'M20,50 Q35,20 50,50 Q65,80 80,50' } 
-            
-            // 注意：這裡已經刪除了那個造成粉色色塊的 'fill' path
+            // --- 實心圖案 (Fill) 10款 ---
+            // 1. 實心愛心
+            { type: 'fill', path: 'M50,90 C20,60 0,40 20,20 C35,5 50,25 50,25 C50,25 65,5 80,20 C100,40 80,60 50,90 Z' },
+            // 2. 實心星星
+            { type: 'fill', path: 'M50,5 L60,35 L95,35 L70,55 L80,90 L50,70 L20,90 L30,55 L5,35 L40,35 Z' },
+            // 3. 實心蝴蝶結
+            { type: 'fill', path: 'M50,50 L20,20 Q10,50 20,80 L50,50 L80,80 Q90,50 80,20 Z' },
+            // 4. 實心花朵
+            { type: 'fill', path: 'M50,50 m-15,0 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0 M50,20 a12,12 0 1,0 0,24 M80,50 a12,12 0 1,0 -24,0 M50,80 a12,12 0 1,0 0,-24 M20,50 a12,12 0 1,0 24,0' },
+            // 5. 貓頭
+            { type: 'fill', path: 'M20,40 Q15,15 40,25 L50,30 L60,25 Q85,15 80,40 Q90,60 80,80 Q50,90 20,80 Q10,60 20,40' },
+            // 6. 兔頭
+            { type: 'fill', path: 'M30,30 Q30,0 45,20 Q50,25 55,20 Q70,0 70,30 Q80,40 70,60 Q50,70 30,60 Q20,40 30,30' },
+            // 7. 氣球
+            { type: 'fill', path: 'M50,50 m-25,0 a25,30 0 1,0 50,0 a25,30 0 1,0 -50,0 M50,80 L50,95' },
+            // 8. 鑽石
+            { type: 'fill', path: 'M30,30 L70,30 L90,50 L50,90 L10,50 Z' },
+            // 9. 櫻桃/糖果
+            { type: 'fill', path: 'M30,60 A10,10 0 1,1 50,60 A10,10 0 1,1 30,60 M55,55 A10,10 0 1,1 75,55 A10,10 0 1,1 55,55 M40,60 L65,55' },
+            // 10. 皇冠
+            { type: 'fill', path: 'M20,70 L20,40 L40,60 L50,30 L60,60 L80,40 L80,70 Z' },
+
+            // --- 空心線條 (Stroke) 10款 ---
+            // 1. 閃光
+            { type: 'stroke', path: 'M50,10 Q60,40 90,50 Q60,60 50,90 Q40,60 10,50 Q40,40 50,10' },
+            // 2. 螺旋
+            { type: 'stroke', path: 'M50,50 m-20,0 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0 a10,10 0 1,1 20,0' },
+            // 3. 雲朵
+            { type: 'stroke', path: 'M20,60 Q30,40 40,50 Q50,30 70,40 Q80,40 80,60 Q80,70 20,70' },
+            // 4. 手繪星星 (線條)
+            { type: 'stroke', path: 'M50,10 L60,40 L90,40 L65,60 L75,90 L50,70 L25,90 L35,60 L10,40 L40,40 Z' },
+            // 5. XX
+            { type: 'stroke', path: 'M30,30 L70,70 M70,30 L30,70' },
+            // 6. 驚嘆號/燈泡線
+            { type: 'stroke', path: 'M50,20 L50,60 M50,80 L50,82' },
+            // 7. 笑臉
+            { type: 'stroke', path: 'M30,40 Q50,35 70,40 M30,40 L25,45 M70,40 L75,45 M50,60 Q50,70 50,70' },
+            // 8. 信封
+            { type: 'stroke', path: 'M20,30 L80,30 L80,70 L20,70 Z M20,30 L50,55 L80,30' },
+            // 9. 翅膀
+            { type: 'stroke', path: 'M50,50 Q20,20 10,40 Q30,50 50,50 Q70,50 90,40 Q80,20 50,50' },
+            // 10. 汗顏水滴
+            { type: 'stroke', path: 'M50,20 C20,50 20,80 50,90 C80,80 80,50 50,20 Z' }
         ];
 
         let occupiedRects = [];
@@ -208,7 +232,8 @@
             const textCount = 1 + Math.floor(Math.random() * 2);
             for(let i=0; i<textCount; i++) drawText(canvas);
 
-            const doodleCount = 6 + Math.floor(Math.random() * 4);
+            // 增加生成數量：至少 8 個，最多 12 個
+            const doodleCount = 8 + Math.floor(Math.random() * 5);
             for(let i=0; i<doodleCount; i++) drawRandomAsset(canvas);
         }
 
@@ -251,7 +276,15 @@
             el.className = 'doodle-item doodle-svg';
             el.style.width = `${size}px`; el.style.height = `${size}px`;
             const strokeWidth = 2 + Math.random() * 3;
-            let svgContent = `<path d="${data.path}" stroke="${color}" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+            
+            let svgContent = '';
+            // 根據類型決定是填充還是描邊
+            if (data.type === 'fill') {
+                svgContent = `<path d="${data.path}" fill="${color}" stroke="none" opacity="0.9"/>`;
+            } else {
+                svgContent = `<path d="${data.path}" stroke="${color}" stroke-width="${strokeWidth}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+            }
+
             el.innerHTML = `<svg viewBox="0 0 100 100" style="overflow:visible; width:100%; height:100%">${svgContent}</svg>`;
             const rot = (Math.random() - 0.5) * 90; const scale = 0.7 + Math.random() * 0.6; 
             el.style.transform = `rotate(${rot}deg) scale(${scale})`;
@@ -261,14 +294,11 @@
 
         function drawHybridFrame(container) {
             const hasExternal = frameLibrary.length > 0;
-            // 30% 機率用圖片邊框，否則用內置手繪邊框
             const useExternal = hasExternal && (Math.random() < 0.3);
-
             if (useExternal) {
                 const src = frameLibrary[Math.floor(Math.random() * frameLibrary.length)];
                 const img = document.createElement('img');
-                img.src = src;
-                img.className = 'frame-image';
+                img.src = src; img.className = 'frame-image';
                 img.onerror = function() { this.remove(); drawInternalSvgBorder(container); };
                 container.appendChild(img);
             } else {
@@ -391,8 +421,10 @@
         }
 
         function placeItem(el, w, h, container, preferEdge = false) {
-            const containerW = 340; const containerH = 540; const padding = 10; let found = false;
-            for(let i=0; i<30; i++) {
+            const containerW = 340; const containerH = 540; const padding = 5; // 減少邊距，讓更多圖案能塞進去
+            let found = false;
+            // 增加嘗試次數，確保能找到位置
+            for(let i=0; i<100; i++) {
                 const left = Math.random() * (containerW - w - padding);
                 const top = Math.random() * (containerH - h - padding);
                 const newRect = { left, top, right: left + w, bottom: top + h };
@@ -405,7 +437,7 @@
             if (!found) el.remove();
         }
         function checkCollision(r1) {
-            const buffer = 5;
+            const buffer = 2; // 減少緩衝距離，允許圖案稍微靠近一點
             for (let r2 of occupiedRects) {
                 if (r1.left < r2.right + buffer && r1.right > r2.left - buffer && r1.top < r2.bottom + buffer && r1.bottom > r2.top - buffer) return true;
             }
